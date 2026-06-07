@@ -599,8 +599,56 @@
 
 </div>
 
+<script>
+
+  var LABELS = {
+    start              : 'Main menu',
+    enroll_menu        : 'Enrollment',
+    enroll_reqs        : 'Requirements',
+    enroll_steps       : 'Process',
+    enroll_when        : 'Enrollment dates',
+  };
+var T = {
 
 
+    enroll_menu: {
+      b: "Great! Enrolling at SIHS is easy. What do you want to know about enrollment?",
+      c: [
+        { l: "📄 Requirements needed",   n: "enroll_reqs"  },
+        { l: "📝 Step-by-step process",  n: "enroll_steps" },
+        { l: "📅 When to enroll",        n: "enroll_when"  },
+        { l: "← Back to main menu",      n: "start", bk: 1 }
+      ]
+    },
+
+    enroll_reqs: {
+      b: "To enroll at SIHS, you will need:\n\n✅ Form 137 (Report Card) from previous school\n✅ PSA Birth Certificate (original + photocopy)\n✅ Good Moral Certificate\n\nFor transferees, also bring a Certificate of Transfer.",
+      c: [
+        { l: "📝 See the process",  n: "enroll_steps" },
+        { l: "📅 When to enroll",   n: "enroll_when"  },
+        { l: "← Back",             n: "enroll_menu", bk: 1 }
+      ]
+    },
+
+    enroll_steps: {
+      b: "Here's the SIHS enrollment process:\n\n1️⃣ Visit the Registrar's Office & get a form\n2️⃣ Fill out the form and attach your requirements\n3️⃣ Submit to the Registrar for assessment\n4️⃣ Receive your grade level & section assignment — you're in!",
+      c: [
+        { l: "📄 What do I need?",  n: "enroll_reqs"  },
+        { l: "📅 When to enroll?",  n: "enroll_when"  },
+        { l: "← Back",             n: "enroll_menu", bk: 1 }
+      ]
+    },
+
+    enroll_when: {
+      b: "📅 SIHS Enrollment Schedule:\n\n• Grade 7 (incoming): IDK PA PO\n• Grade 8–12 (returning): IDK PA PO\n\n⚠️ Enroll early for better section options!",
+      c: [
+        { l: "📄 Requirements",    n: "enroll_reqs"  },
+        { l: "📝 See the process", n: "enroll_steps" },
+        { l: "← Main menu",       n: "start", bk: 1 }
+      ]
+    }
+      
+  </script>
 
 </body>
 </html>
