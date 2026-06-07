@@ -647,6 +647,250 @@ var T = {
         { l: "← Main menu",       n: "start", bk: 1 }
       ]
     }
+      function goHome() {
+    document.getElementById('game').style.display    = 'none';
+    document.getElementById('welcome').style.display = 'block';
+    // Reset for next visit
+    document.getElementById('chatbox').innerHTML    = '';
+    document.getElementById('choices').innerHTML    = '';
+    document.getElementById('choices').className    = '';
+    document.getElementById('askpanel').style.display = 'none';
+    document.getElementById('choices').style.display  = 'flex';
+    document.getElementById('btnG').className = 'mbtn on';
+    document.getElementById('btnA').className = 'mbtn';
+    mode = 'guide';
+  }
+
+  function startGame(node) {
+    document.getElementById('welcome').style.display = 'none';
+    document.getElementById('game').style.display    = 'flex';
+
+    if (node === 'start') {
+      
+      document.getElementById('chatbox').innerHTML  = '';
+      document.getElementById('choices').innerHTML  = '';
+      document.getElementById('choices').className  = '';
+      document.getElementById('askpanel').style.display = 'none';
+      document.getElementById('choices').style.display  = 'flex';
+      document.getElementById('btnG').className = 'mbtn on';
+      document.getElementById('btnA').className = 'mbtn';
+      mode = 'guide';
+      updateProg('start');
+      setTimeout(function () {
+        addBot("Hi! Welcome to the SIHS Info Guide. Choose a topic to explore, or tap 💬 Ask to type your own question.");
+        showFullMenu();
+      }, 150);
+    } else {
+      showNode(node);
+    }
+  }
+
+  function showNode(key) {
+    if (key === 'start') { goHome(); return; }
+    var node = T[key];
+    if (!node) return;
+    updateProg(key);
+    setTimeout(function () {
+      addBot(node.b);
+      if (mode === 'guide') showChoices(node.c);
+    }, 150);
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.getElementById('btnG').className = 'mbtn' + (m === 'guide' ? ' on' : '');
+    document.getElementById('btnA').className = 'mbtn' + (m === 'ask'   ? ' on' : '');
+    document.getElementById('choices').style.display  = m === 'guide' ? 'flex'  : 'none';
+    document.getElementById('askpanel').style.display = m === 'ask'   ? 'block' : 'none';
+
+    if (m === 'ask') {
+      addBot("You're in Ask mode! Type any question about SIHS below.");
+      setTimeout(function () { document.getElementById('askinput').focus(); }, 100);
+    } else {
+      goHome();
+    }
+  }
+
+
+
+  function updateProg(key) {
+    visited.add(key);
+    var total = Object.keys(LABELS).length;
+    var pct   = Math.min(Math.round((visited.size / total) * 100), 99);
+    document.getElementById('pfill').style.width   = pct + '%';
+    document.getElementById('ppct').textContent    = pct + '% explored';
+    document.getElementById('ptopic').textContent  = LABELS[key] || 'Exploring SIHS';
+  }
+
+
+
+  function addBot(text) {
+    var box = document.getElementById('chatbox');
+    var d  = document.createElement('div'); d.className = 'msg bot';
+    var av = document.createElement('div'); av.className = 'av'; av.textContent = 'S';
+    var b  = document.createElement('div'); b.className  = 'bub'; b.textContent = text;
+    d.appendChild(av);
+    d.appendChild(b);
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function addUser(text) {
+    var box = document.getElementById('chatbox');
+    var d  = document.createElement('div'); d.className = 'msg user';
+    var av = document.createElement('div'); av.className = 'av'; av.textContent = 'You'; av.style.fontSize = '9px';
+    var b  = document.createElement('div'); b.className  = 'bub'; b.textContent = text;
+    d.appendChild(av);
+    d.appendChild(b);
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function addThinking() {
+    var box = document.getElementById('chatbox');
+    var d  = document.createElement('div'); d.className = 'msg think'; d.id = 'thinking';
+    var av = document.createElement('div'); av.className = 'av'; av.textContent = 'S';
+    var b  = document.createElement('div'); b.className  = 'bub'; b.textContent = 'Thinking…';
+    d.appendChild(av);
+    d.appendChild(b);
+    box.appendChild(d);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function removeThinking() {
+    var t = document.getElementById('thinking');
+    if (t) t.remove();
+  }
+
+
+
+  function showChoices(choices) {
+    var c = document.getElementById('choices');
+    c.innerHTML  = '';
+    c.className  = '';
+
+    var filtered     = choices.filter(function (ch) { return ch.n !== 'start'; });
+    var hadMainMenu  = choices.some(function (ch)   { return ch.n === 'start'; });
+
+    filtered.forEach(function (ch) {
+      var btn = document.createElement('button');
+      btn.className   = 'cbtn' + (ch.bk ? ' back' : '');
+      btn.textContent = ch.l;
+      btn.onclick = function () {
+        addUser(ch.l);
+        c.innerHTML = '';
+        showNode(ch.n);
+      };
+      c.appendChild(btn);
+    });
+
+    if (hadMainMenu) {
+      var homeBtn = document.createElement('button');
+      homeBtn.className   = 'cbtn back';
+      homeBtn.textContent = '🏠 Back to home';
+      homeBtn.onclick = function () { goHome(); };
+      c.appendChild(homeBtn);
+    }
+  }
+
+  function showFullMenu() {
+    var c = document.getElementById('choices');
+    c.innerHTML = '';
+    c.className = 'start-grid';
+
+    var items = [
+      { ico: '📋', lbl: 'Enrollment', sub: 'Steps & requirements', n: 'enroll_menu'     },
+      { ico: '📅', lbl: 'Schedules',  sub: 'JHS & SHS timetables', n: 'schedule_menu'   },
+      { ico: '🏫', lbl: 'Facilities', sub: 'Campus areas',          n: 'facilities_menu' },
+      { ico: '👥', lbl: 'Services',   sub: 'Clubs & guidance',      n: 'services_menu'   },
+      { ico: '❓', lbl: 'FAQs',       sub: 'Common questions',      n: 'faq_menu'        }
+    ];
+
+    items.forEach(function (item, i) {
+      var btn = document.createElement('button');
+      btn.className = 'cbtn start-card';
+      if (i === items.length - 1 && items.length % 2 !== 0) {
+        btn.style.gridColumn = 'span 2';
+      }
+      btn.innerHTML =
+        '<span class="card-ico">' + item.ico + '</span>' +
+        '<span class="card-lbl">' + item.lbl + '</span>' +
+        '<span class="card-sub">' + item.sub + '</span>';
+      btn.onclick = function () {
+        addUser(item.lbl);
+        c.innerHTML = '';
+        c.className = '';
+        showNode(item.n);
+      };
+      c.appendChild(btn);
+    });
+  }
+
+
+
+  async function sendQ() {
+    var inp = document.getElementById('askinput');
+    var btn = document.getElementById('asksend');
+    var q   = inp.value.trim();
+    if (!q) return;
+
+    addUser(q);
+    inp.value    = '';
+    btn.disabled = true;
+    addThinking();
+
+    try {
+      var res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model      : 'claude-sonnet-4-20250514',
+          max_tokens : 1000,
+          system     : SYS,
+          messages   : [{ role: 'user', content: q }]
+        })
+      });
+      var data = await res.json();
+      removeThinking();
+      addBot(
+        data.content && data.content[0]
+          ? data.content[0].text
+          : "Sorry, I couldn't find an answer. Please visit the SIHS office for help!"
+      );
+    } catch (e) {
+      removeThinking();
+      addBot("Oops! I'm having trouble connecting. Please try again or visit the school office.");
+    }
+
+    btn.disabled = false;
+  }
+
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+
+    
+    var inp = document.getElementById('askinput');
+    if (inp) {
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') sendQ();
+      });
+    }
+
+    
+    document.body.addEventListener('touchmove', function (e) {
+      if (e.target.closest('#chatbox') || e.target.closest('#welcome')) return;
+      e.preventDefault();
+    }, { passive: false });
+
+   
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', function () {
+        document.getElementById('app').style.height = window.visualViewport.height + 'px';
+      });
+    }
+
+  });
       
   </script>
 
